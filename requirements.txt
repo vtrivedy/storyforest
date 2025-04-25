@@ -1,0 +1,7 @@
+openai
+aiofiles
+Pillow
+python-dotenv
+fastapi
+uvicorn
+pydantic

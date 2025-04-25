@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>Story Forest Demo</title>
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Nunito:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ghibli-cream: #f9f3e9;
+    --ghibli-bg: #e8f4ea;
+    --ghibli-accent: #88b6a3;
+    --ghibli-text: #5d5759;
+    --ghibli-accent-dark: #6a9e8c;
+    --ghibli-blue: #a3c9d9;
+    --ghibli-pink: #f0b5b5;
+    --ghibli-yellow: #f6e7b0;
+  }
+  
+  body {
+    font-family: 'Nunito', sans-serif;
+    max-width: 1000px;
+    margin: auto;
+    padding: 2rem;
+    background-color: var(--ghibli-bg);
+    color: var(--ghibli-text);
+    line-height: 1.6;
+    position: relative;
+  }
+  
+  h1, h2 {
+    font-family: 'Caveat', cursive;
+    color: var(--ghibli-accent-dark);
+    margin-bottom: 1.5rem;
+  }
+  
+  h1 {
+    font-size: 3.5rem;
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .subtitle {
+    text-align: center;
+    font-family: 'Patrick Hand', cursive;
+    font-size: 1.5rem;
+    color: var(--ghibli-text);
+    margin-bottom: 2rem;
+  }
+  
+  h2 {
+    font-size: 2.5rem;
+    border-bottom: 3px solid var(--ghibli-yellow);
+    padding-bottom: 0.5rem;
+    margin-top: 2rem;
+  }
+  
+  img {
+    max-width: 100%;
+    display: block;
+    margin: 1rem auto;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .generator-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 2rem 0;
+    background-color: var(--ghibli-cream);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+  }
+  
+  .generator-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-weight: bold;
+    font-family: 'Patrick Hand', cursive;
+    font-size: 1.2rem;
+    color: var(--ghibli-accent-dark);
+  }
+  
+  .generator-form input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--ghibli-blue);
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: white;
+    font-family: 'Nunito', sans-serif;
+    transition: all 0.3s ease;
+  }
+  
+  .generator-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--ghibli-blue);
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: white;
+    font-family: 'Nunito', sans-serif;
+    transition: all 0.3s ease;
+    min-height: 80px;
+    resize: vertical;
+  }
+  
+  .generator-form input:focus,
+  .generator-form textarea:focus {
+    outline: none;
+    border-color: var(--ghibli-accent);
+    box-shadow: 0 0 0 3px rgba(136, 182, 163, 0.2);
+  }
+  
+  .generator-form input[type="number"] {
+    width: 120px;
+  }
+  
+  .input-note {
+    font-size: 0.85rem;
+    color: var(--ghibli-accent-dark);
+    margin-top: 4px;
+    font-style: italic;
+  }
+  
+  .preset-section {
+    margin-top: 15px;
+  }
+  
+  .preset-section h3 {
+    font-family: 'Patrick Hand', cursive;
+    color: var(--ghibli-accent-dark);
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+  }
+  
+  .preset-buttons {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .preset-button {
+    background-color: var(--ghibli-blue);
+    border: none;
+    border-radius: 25px;
+    padding: 8px 15px;
+    font-family: 'Patrick Hand', cursive;
+    font-size: 0.95rem;
+    color: var(--ghibli-text);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    text-align: center;
+  }
+  
+  .preset-button:hover {
+    background-color: var(--ghibli-accent);
+    color: white;
+    transform: translateY(-2px);
+  }
+  
+  .preset-button.story {
+    background-color: #f0b5b5;
+  }
+  
+  .preset-button.story:hover {
+    background-color: #ef9e9e;
+  }
+  
+  .preset-button.selected {
+    background-color: var(--ghibli-accent);
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  .preset-button.story.selected {
+    background-color: #ef9e9e;
+  }
+  
+  .generator-form button {
+    background: var(--ghibli-accent);
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    margin-top: 15px;
+    width: 220px;
+    align-self: flex-start;
+    font-family: 'Patrick Hand', cursive;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  }
+  
+  .generator-form button:hover {
+    background: var(--ghibli-accent-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 2rem;
+    font-style: italic;
+    color: var(--ghibli-accent);
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  /* Loading animation */
+  .loading-animation {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    margin: 15px auto;
+  }
+  
+  .leaf {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation: spin 3s infinite ease-in-out;
+  }
+  
+  .leaf::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    width: 20px;
+    height: 40px;
+    margin-left: -10px;
+    background-color: var(--ghibli-accent);
+    border-radius: 50% 50% 0 50%;
+    transform-origin: 50% 0;
+    animation: wave 1.5s infinite ease-in-out;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .leaf:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+  
+  .leaf:nth-child(2)::before {
+    background-color: var(--ghibli-yellow);
+    animation-delay: 0.3s;
+    transform: rotate(72deg);
+  }
+  
+  .leaf:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+  
+  .leaf:nth-child(3)::before {
+    background-color: var(--ghibli-blue);
+    animation-delay: 0.6s;
+    transform: rotate(144deg);
+  }
+  
+  .leaf:nth-child(4) {
+    animation-delay: 0.9s;
+  }
+  
+  .leaf:nth-child(4)::before {
+    background-color: var(--ghibli-pink);
+    animation-delay: 0.9s;
+    transform: rotate(216deg);
+  }
+  
+  .leaf:nth-child(5) {
+    animation-delay: 1.2s;
+  }
+  
+  .leaf:nth-child(5)::before {
+    background-color: var(--ghibli-accent-dark);
+    animation-delay: 1.2s;
+    transform: rotate(288deg);
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes wave {
+    0%, 100% {
+      transform-origin: 50% 0;
+      transform: rotate(0deg);
+    }
+    50% {
+      transform-origin: 50% 0;
+      transform: rotate(15deg);
+    }
+  }
+  
+  hr {
+    border: none;
+    height: 3px;
+    background-color: var(--ghibli-yellow);
+    margin: 2.5rem 0;
+  }
+  
+  .story-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  
+  .story-card {
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+    overflow: hidden;
+    text-align: center;
+    background-color: var(--ghibli-cream);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  
+  .story-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  }
+  
+  .story-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+    margin: 0;
+  }
+  
+  .story-card h3 {
+    margin: 15px 12px;
+    font-family: 'Caveat', cursive;
+    font-size: 1.6rem;
+    color: var(--ghibli-accent-dark);
+  }
+  
+  .story-card a {
+    display: inline-block;
+    background: var(--ghibli-accent);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    margin: 5px 0 15px 0;
+    font-family: 'Patrick Hand', cursive;
+    transition: all 0.3s ease;
+  }
+  
+  .story-card a:hover {
+    background: var(--ghibli-accent-dark);
+    transform: scale(1.05);
+  }
+</style>
+<div class="creator-info">
+  Made by <a href="https://github.com/vtrivedy" target="_blank">vtrivedy</a> • <a href="https://twitter.com/Vtrivedy10" target="_blank">@Vtrivedy10</a>
+</div>
+<h1>Story Forest</h1>
+<div class="subtitle">Bring your stories to life in minutes</div>
+
+<div class="generator-form">
+  <label>
+    Topic 
+    <textarea id="topic" placeholder="Choose a story idea or write your own"></textarea>
+  </label>
+  
+  <div class="preset-section">
+    <h3>Preset Story Ideas</h3>
+    <div class="preset-buttons">
+      <button class="preset-button story" data-story="Musicians whose songs can physically shape reality in a dream dimension">Dreamworld Musicians</button>
+      <button class="preset-button story" data-story="Ancient tree spirits awaken to protect their home from encroaching development">Forest Guardian</button>
+      <button class="preset-button story" data-story="A mysterious garden where mechanical flowers bloom alongside real ones">Clockwork Garden</button>
+      <button class="preset-button story" data-story="Animals with technological enhancements living in a protected nature reserve">Cybernetic Sanctuary</button>
+    </div>
+  </div>
+  
+  <label>
+    Style
+    <textarea id="style" placeholder="Choose a preset style or enter your own"></textarea>
+  </label>
+  
+  <div class="preset-section">
+    <h3>Preset Art Styles</h3>
+    <div class="preset-buttons">
+      <button class="preset-button selected" data-style="studio ghibli animation style, vibrant anime colors, pastel color palette, gentle rounded shapes, expressive characters and nature">Studio Ghibli</button>
+      <button class="preset-button" data-style="Pixar animation style, hyper-realistic texturing, exaggerated proportions, polished 3D rendering, playful character design, vibrant lighting, emotional expressiveness, attention to tiny details">Pixar 3D</button>
+      <button class="preset-button" data-style="Dark fantasy concept art, atmospheric lighting, dramatic contrasts, rich textures, fantasy creatures, intricate armor details, mysterious fog effects, moody color palette with pops of luminescence">Dark Fantasy</button>
+      <button class="preset-button" data-style="Traditional folk art style, flat perspective, decorative patterns, bold simplified shapes, primary color palette, storytelling scenes, charming imperfections, cultural motifs, handcrafted quality">Folk Art</button>
+    </div>
+  </div>
+  
+  <label>
+    Pages 
+    <input id="pages" type="number" value="6" min="5" max="10">
+    <div class="input-note">Minimum 5, maximum 10 pages</div>
+  </label>
+  <button id="go">Generate Story</button>
+</div>
+
+<div id="status" class="loading" style="display:none">
+  <div class="loading-animation">
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+  </div>
+  Generating your story... This may take a few minutes.
+</div>
+
+<hr>
+<h2>Your Stories</h2>
+<div id="story-gallery" class="story-gallery">
+  <!-- Story cards will be dynamically added here -->
+  <div class="loading">No stories yet. Generate your first story above!</div>
+</div>
+
+<script>
+// Function to load and display story gallery
+async function loadStoryGallery() {
+  const galleryElement = document.getElementById('story-gallery');
+  
+  try {
+    console.log('Fetching stories directory listing...');
+    const response = await fetch('/api/stories');
+    if (!response.ok) {
+      throw new Error(`Failed to load stories: ${response.statusText} (${response.status})`);
+    }
+    
+    const storyDirectories = await response.json();
+    console.log(`Found ${storyDirectories.length} story directories`);
+    
+    if (storyDirectories.length === 0) {
+      galleryElement.innerHTML = '<div class="loading">No stories yet. Generate your first story above!</div>';
+      return;
+    }
+    
+    // Clear the gallery
+    galleryElement.innerHTML = '';
+    
+    // Sort directories by name (newest first, assuming timestamp-based naming)
+    storyDirectories.sort().reverse();
+    
+    // Add each story to the gallery
+    let validStoriesFound = 0;
+    
+    for (const storyDir of storyDirectories) {
+      try {
+        console.log(`Checking story in directory: ${storyDir}`);
+        const storyResponse = await fetch(`/stories/${storyDir}/story.json`);
+        
+        if (!storyResponse.ok) {
+          console.warn(`Skipping directory ${storyDir}: story.json not found (${storyResponse.status})`);
+          continue;
+        }
+        
+        const storyData = await storyResponse.json();
+        const metadata = storyData[0]; // First object contains metadata
+        
+        if (!metadata || !metadata.title) {
+          console.warn(`Skipping directory ${storyDir}: Invalid metadata`);
+          continue;
+        }
+        
+        // Create a card for this story
+        const card = document.createElement('div');
+        card.className = 'story-card';
+        
+        // Check if cover image exists
+        const coverImage = `/stories/${storyDir}/cover.png`;
+        const fallbackImage = `/stories/${storyDir}/pages/page_01.png`;
+        
+        card.innerHTML = `
+          <img src="${coverImage}" alt="${metadata.title}" onerror="this.onerror=null; this.src='${fallbackImage}';">
+          <h3>${metadata.title}</h3>
+          <a href="/book.html?id=${storyDir}" target="_blank">Read Story</a>
+        `;
+        
+        galleryElement.appendChild(card);
+        validStoriesFound++;
+      } catch (error) {
+        console.error(`Error loading story ${storyDir}:`, error);
+      }
+    }
+    
+    if (validStoriesFound === 0) {
+      galleryElement.innerHTML = '<div class="loading">No valid stories found. Generate a new story!</div>';
+    } else {
+      console.log(`Successfully loaded ${validStoriesFound} stories`);
+    }
+  } catch (error) {
+    console.error('Error loading story gallery:', error);
+    galleryElement.innerHTML = `<div class="loading">Error loading stories: ${error.message}</div>`;
+  }
+}
+
+// Handle style preset buttons
+document.querySelectorAll('.preset-button').forEach(button => {
+  button.addEventListener('click', function() {
+    const isStoryButton = this.classList.contains('story');
+    
+    // Handle style buttons
+    if (!isStoryButton) {
+      // Reset all style buttons
+      document.querySelectorAll('.preset-button:not(.story)').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      
+      // Select this button
+      this.classList.add('selected');
+      
+      // Set the style
+      document.getElementById('style').value = this.getAttribute('data-style');
+    } 
+    // Handle story preset buttons
+    else {
+      // Set the topic
+      document.getElementById('topic').value = this.getAttribute('data-story');
+    }
+  });
+});
+
+// Initialize gallery on page load
+document.addEventListener('DOMContentLoaded', loadStoryGallery);
+
+// Handle page input validation
+const pagesInput = document.getElementById('pages');
+pagesInput.addEventListener('change', function() {
+  const value = parseInt(this.value);
+  if (value < 5) {
+    this.value = 5;
+  } else if (value > 10) {
+    this.value = 10;
+  }
+});
+
+// Handle generate button click
+document.getElementById('go').onclick = async () => {
+  const topic = document.getElementById('topic').value.trim();
+  const style = document.getElementById('style').value.trim();
+  let pages = parseInt(document.getElementById('pages').value);
+  
+  // Enforce page limits
+  if (pages < 5) pages = 5;
+  if (pages > 10) pages = 10;
+  
+  if (!topic) return alert("Enter a topic first!");
+  
+  // Show loading status
+  const statusElement = document.getElementById('status');
+  statusElement.style.display = 'flex';
+  
+  // Scroll to the status element smoothly
+  statusElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  
+  try {
+    const res = await fetch('/api/story', {
+      method: "POST",
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ topic, style, pages })
+    });
+    
+    if (!res.ok) {
+      throw new Error(`Backend error: ${res.statusText}`);
+    }
+    
+    const data = await res.json();
+    
+    // Update status with success message
+    statusElement.innerHTML = `
+      <div class="loading-animation">
+        <div class="leaf"></div>
+        <div class="leaf"></div>
+        <div class="leaf"></div>
+        <div class="leaf"></div>
+        <div class="leaf"></div>
+      </div>
+      Story generated successfully!
+    `;
+    
+    // Reload the gallery to show the new story
+    await loadStoryGallery();
+    
+    // Redirect to the book view for the new story
+    const storyId = data.cover_image.split('/')[2]; // Extract timestamp ID from path
+    window.location.href = `/book.html?id=${storyId}`;
+  } catch (error) {
+    console.error('Error generating story:', error);
+    statusElement.innerHTML = `
+      <div style="color: #e74c3c;">Error: ${error.message}</div>
+    `;
+  }
+};
+</script>
+</html>

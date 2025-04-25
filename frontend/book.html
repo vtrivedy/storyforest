@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Story Forest - Interactive Storybook</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+  
+  <!-- Link Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Nunito:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --ghibli-cream: #f9f3e9;
+      --ghibli-bg: #e8f4ea;
+      --ghibli-accent: #88b6a3;
+      --ghibli-text: #5d5759;
+      --ghibli-accent-dark: #6a9e8c;
+      --ghibli-blue: #a3c9d9;
+      --ghibli-pink: #f6d6d6;
+      --ghibli-yellow: #f6e7b0;
+    }
+    
+    body {
+      background: var(--ghibli-bg);
+      color: var(--ghibli-text);
+      font-family: 'Nunito', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    .storybook-container {
+      width: 95%;
+      max-width: 1600px;
+      position: relative;
+      margin: 0 auto;
+      padding: 10px 0;
+    }
+    
+    .book-container {
+      position: relative;
+      perspective: 1500px;
+      transform-style: preserve-3d;
+    }
+    
+    .swiper {
+      width: 100%;
+      height: 90vh;
+      max-height: 1000px;
+    }
+    
+    .swiper-slide {
+      display: flex;
+      border-radius: 15px;
+      overflow: hidden;
+      background: var(--ghibli-cream);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+      position: relative;
+    }
+    
+    /* Home button */
+    .home-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: var(--ghibli-accent);
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      text-decoration: none;
+      font-size: 24px;
+      transition: all 0.3s ease;
+    }
+    
+    .home-button:hover {
+      background: var(--ghibli-accent-dark);
+      transform: scale(1.1);
+    }
+    
+    /* Cover styling */
+    .page-cover {
+      background: linear-gradient(45deg, var(--ghibli-accent) 0%, var(--ghibli-blue) 100%);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .page-cover h1 {
+      font-family: 'Caveat', cursive;
+      font-size: 4em;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+    }
+    
+    .page-cover .author {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 1.8em;
+      margin-top: 20px;
+    }
+    
+    .page-cover img {
+      width: 70%;
+      max-width: 600px;
+      border-radius: 15px;
+      margin: 20px 0;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      object-fit: contain;
+    }
+    
+    /* Story page styling */
+    .page-content {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    
+    .page-image {
+      flex: 1;
+      min-height: 70%;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: var(--ghibli-cream);
+    }
+    
+    .page-text-container {
+      padding: 25px;
+      background-color: var(--ghibli-cream);
+      max-height: 30%;
+      overflow: auto;
+      border-top: 3px solid var(--ghibli-yellow);
+    }
+    
+    .page-text {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 1.5em;
+      line-height: 1.6;
+      text-align: left;
+    }
+    
+    .page-number {
+      position: absolute;
+      bottom: 15px;
+      right: 25px;
+      font-size: 1.2em;
+      color: var(--ghibli-accent);
+      font-family: 'Caveat', cursive;
+    }
+    
+    /* Navigation buttons */
+    .swiper-button-next,
+    .swiper-button-prev {
+      color: var(--ghibli-accent);
+      background: rgba(255, 255, 255, 0.9);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    }
+    
+    .swiper-button-next:after,
+    .swiper-button-prev:after {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .swiper-button-next:hover,
+    .swiper-button-prev:hover {
+      background: white;
+      color: var(--ghibli-accent-dark);
+    }
+    
+    /* Loading indicator */
+    .loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--ghibli-bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    
+    .loading p {
+      font-size: 1.8em;
+      color: var(--ghibli-accent);
+      font-family: 'Caveat', cursive;
+    }
+    
+    /* For screens smaller than 768px */
+    @media (max-width: 768px) {
+      .swiper {
+        height: 95vh;
+      }
+      
+      .page-text {
+        font-size: 1.2em;
+      }
+      
+      .page-cover h1 {
+        font-size: 2.5em;
+      }
+      
+      .page-cover .author {
+        font-size: 1.5em;
+      }
+      
+      .page-image {
+        min-height: 60%;
+      }
+      
+      .page-text-container {
+        max-height: 40%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Loading indicator -->
+  <div class="loading" id="loading">
+    <p>Loading your storybook...</p>
+  </div>
+  
+  <!-- Home button -->
+  <a href="/" class="home-button" title="Return to Home">🏠</a>
+  
+  <div class="storybook-container">
+    <div class="book-container">
+      <!-- Swiper -->
+      <div class="swiper">
+        <div class="swiper-wrapper">
+          <!-- Content will be dynamically loaded by book.js -->
+        </div>
+        
+        <!-- Add Navigation -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  
+  <!-- Our book loader script -->
+  <script src="/book.js"></script>
+  
+  <!-- Remove loading indicator once loaded -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Hide loading indicator after a small delay to ensure everything is loaded
+      setTimeout(function() {
+        document.getElementById('loading').style.display = 'none';
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
